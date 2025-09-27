@@ -24,7 +24,7 @@ dist/
 db.sqlite3
 /staticfiles/
 media/
-images/
+/images/
 *.cover
 *.mo
 
