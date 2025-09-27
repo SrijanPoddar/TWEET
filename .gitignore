@@ -24,6 +24,8 @@ dist/
 db.sqlite3
 /staticfiles/
 media/
+images/
+*.cover
 *.mo
 
 # VS Code
