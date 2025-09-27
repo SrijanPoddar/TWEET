@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{% url 'tweet_create' %}" class="btn btn-primary">Create a tweet</a>
+    <form class="d-flex" method="get" action="{% url 'tweet_list' %}">
+      <input class="form-control me-2" type="search" name="q" placeholder="Search tweets..." value="{{ request.GET.q }}">
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="container row gap-3 justify-content-start">
+    {% for tweet in tweets %}
+      <div class="card shadow-sm p-0" style="width: 18rem;">
+        {% if tweet.photo %}
+          <img src="{{ tweet.photo.url }}" class="card-img-top" alt="Tweet image" />
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title text-primary">{{ tweet.user.username }}</h5>
+          <p class="card-text">{{ tweet.text }}</p>
+          {% if tweet.user == user %}
+            <div class="d-flex gap-2">
+              <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-sm btn-primary">EDIT</a>
+              <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-sm btn-danger">DELETE</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No tweets found.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

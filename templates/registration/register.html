@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+{% block content %}
+<style>
+  body {
+    background: #121212;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+  }
+
+  .form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .form-card {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .form-card h2 {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .form-label {
+    color: #ddd;
+    font-weight: 500;
+    margin-right: 10px;
+    width: 120px; /* fixed width for alignment */
+    text-align: right;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .form-control {
+    flex: 1;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #444;
+    background: #2c2c2c;
+    color: #fff;
+  }
+
+  .form-control:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
+    background: #333;
+  }
+
+  .btn-primary {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(to right, #5c0dcc, #1f5cf3);
+  }
+
+  .login-link {
+    margin-top: 1rem;
+    text-align: center;
+    color: #bbb;
+  }
+
+  .login-link a {
+    color: #4a90e2;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+
+  .text-danger {
+    margin-left: 130px; /* aligns with inputs */
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container form-container">
+  <div class="form-card">
+    <h2>Register</h2>
+    <form method="post" action="{% url 'register' %}">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+        </div>
+        {% if field.errors %}
+          <div class="text-danger">{{ field.errors|striptags }}</div>
+        {% endif %}
+      {% endfor %}
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+    <div class="login-link">
+      Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
