@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet/', include('tweet.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', lambda request: redirect('tweet/', permanent=False)),
+    path('', lambda request: redirect('tweet_list', permanent=False)),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
