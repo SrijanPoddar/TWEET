@@ -1,118 +1,299 @@
 {% extends 'layout.html' %}
-{% block content %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block extra_head %}
 <style>
-  body {
-    background: #121212;
-    font-family: 'Segoe UI', sans-serif;
-    color: #e0e0e0;
-  }
+    /* Reuse auth styles (same as login) */
+    .auth-page {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 130px);
+        padding: 1.5rem 0 3rem;
+    }
 
-  .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
+    .auth-wrapper {
+        width: 100%;
+        max-width: 460px;
+    }
 
-  .form-card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    width: 100%;
-    max-width: 500px;
-  }
+    .auth-brand {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .auth-brand-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.9rem;
+        font-size: 1.4rem;
+        color: white;
+        box-shadow: 0 8px 30px var(--accent-glow);
+    }
+    .auth-brand h1 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .auth-brand p { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.3rem; }
 
-  .form-card h2 {
-    color: #fff;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+    .auth-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    .auth-card-body { padding: 2rem; }
+    .auth-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.3px;
+    }
 
-  .form-label {
-    color: #ddd;
-    font-weight: 500;
-    margin-right: 10px;
-    width: 120px; /* fixed width for alignment */
-    text-align: right;
-  }
+    /* Feature pills */
+    .feature-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .feature-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.7rem;
+        background: rgba(108,99,255,0.08);
+        border: 1px solid rgba(108,99,255,0.18);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--accent-2);
+        font-weight: 500;
+    }
 
-  .form-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
+    .form-group { margin-bottom: 1.1rem; }
 
-  .form-control {
-    flex: 1;
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #fff;
-  }
+    .form-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+    }
 
-  .form-control:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
-    background: #333;
-  }
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="email"] {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.925rem;
+        outline: none;
+        transition: all var(--transition);
+        -webkit-appearance: none;
+    }
+    .form-group input:focus {
+        border-color: var(--accent);
+        background: rgba(108,99,255,0.06);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group input::placeholder { color: var(--text-muted); }
 
-  .btn-primary {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
+    /* Help text */
+    .field-help {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+    }
 
-  .btn-primary:hover {
-    background: linear-gradient(to right, #5c0dcc, #1f5cf3);
-  }
+    /* Error */
+    .field-error {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+        color: var(--danger);
+        font-size: 0.8rem;
+        margin-top: 0.45rem;
+        background: rgba(248,113,113,0.08);
+        padding: 0.4rem 0.65rem;
+        border-radius: 6px;
+        border: 1px solid rgba(248,113,113,0.15);
+    }
+    .field-error i { flex-shrink: 0; margin-top: 0.08rem; }
 
-  .login-link {
-    margin-top: 1rem;
-    text-align: center;
-    color: #bbb;
-  }
+    /* Password strength indicator */
+    .strength-bar {
+        height: 3px;
+        border-radius: 2px;
+        margin-top: 0.45rem;
+        background: var(--border);
+        overflow: hidden;
+        transition: background var(--transition);
+    }
+    .strength-fill {
+        height: 100%;
+        border-radius: 2px;
+        width: 0;
+        transition: width 0.4s ease, background 0.4s ease;
+    }
+    .strength-label {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+        text-align: right;
+    }
 
-  .login-link a {
-    color: #4a90e2;
-    font-weight: 600;
-    text-decoration: none;
-  }
+    .btn-auth {
+        width: 100%;
+        padding: 0.8rem;
+        justify-content: center;
+        font-size: 0.95rem;
+        margin-top: 0.75rem;
+        border-radius: var(--radius-md);
+    }
 
-  .login-link a:hover {
-    text-decoration: underline;
-  }
+    .auth-card-footer {
+        padding: 1.1rem 2rem;
+        border-top: 1px solid var(--border);
+        background: rgba(0,0,0,0.12);
+        text-align: center;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+    .auth-card-footer a {
+        color: var(--accent-2);
+        font-weight: 600;
+        text-decoration: none;
+        transition: color var(--transition);
+    }
+    .auth-card-footer a:hover { color: var(--accent); }
 
-  .text-danger {
-    margin-left: 130px; /* aligns with inputs */
-    font-size: 0.85rem;
-  }
+    /* Terms notice */
+    .terms-notice {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 1rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+        .auth-card-body, .auth-card-footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
 </style>
+{% endblock %}
 
-<div class="container form-container">
-  <div class="form-card">
-    <h2>Register</h2>
-    <form method="post" action="{% url 'register' %}">
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-          {{ field }}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-wrapper">
+
+        <!-- Brand mark -->
+        <div class="auth-brand">
+            <div class="auth-brand-icon">
+                <i class="ph-fill ph-lightning"></i>
+            </div>
+            <h1>TWEET</h1>
+            <p>Join the conversation — it's free</p>
         </div>
-        {% if field.errors %}
-          <div class="text-danger">{{ field.errors|striptags }}</div>
-        {% endif %}
-      {% endfor %}
-      <button type="submit" class="btn btn-primary w-100">Register</button>
-    </form>
-    <div class="login-link">
-      Already have an account? <a href="{% url 'login' %}">Login here</a>
+
+        <div class="auth-card">
+            <div class="auth-card-body">
+                <h2 class="auth-card-title">Create your account</h2>
+
+                <div class="feature-pills">
+                    <span class="feature-pill"><i class="ph ph-check"></i> Free forever</span>
+                    <span class="feature-pill"><i class="ph ph-check"></i> Share thoughts</span>
+                    <span class="feature-pill"><i class="ph ph-check"></i> Upload photos</span>
+                </div>
+
+                <form method="post" action="{% url 'register' %}" id="register-form">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+
+                        {% if field.name == 'password1' %}
+                        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                        <div class="strength-label" id="strength-label"></div>
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <div class="field-help">{{ field.help_text|striptags }}</div>
+                        {% endif %}
+
+                        {% if field.errors %}
+                        <div class="field-error">
+                            <i class="ph ph-warning-circle"></i>
+                            {{ field.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary btn-auth" id="register-submit-btn">
+                        <i class="ph-fill ph-user-plus"></i>
+                        Create Account
+                    </button>
+
+                    <p class="terms-notice">
+                        By creating an account you agree to our terms and privacy policy.
+                    </p>
+                </form>
+            </div>
+
+            <div class="auth-card-footer">
+                Already have an account?
+                <a href="{% url 'login' %}" id="go-login-link">Sign in here</a>
+            </div>
+        </div>
+
     </div>
-  </div>
 </div>
+
+<script>
+    const pw = document.querySelector('#id_password1');
+    const fill = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+
+    if (pw && fill && label) {
+        pw.addEventListener('input', () => {
+            const v = pw.value;
+            let score = 0;
+            if (v.length >= 8)  score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+
+            const pct = (score / 4) * 100;
+            fill.style.width = pct + '%';
+
+            const colors  = ['#ef4444','#f97316','#eab308','#22c55e'];
+            const labels  = ['Weak','Fair','Good','Strong'];
+            fill.style.background = colors[score - 1] || '#555';
+            label.textContent = v.length ? labels[score - 1] || '' : '';
+            label.style.color = colors[score - 1] || 'var(--text-muted)';
+        });
+    }
+</script>
 {% endblock %}

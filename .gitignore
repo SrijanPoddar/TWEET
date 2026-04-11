@@ -1,43 +1,98 @@
+# ──────────────────────────────────────────────
 # Python
+# ──────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 *.pyc
 *.pdb
+*.so
 
-# Virtual environment
+# ──────────────────────────────────────────────
+# Virtual Environments
+# ──────────────────────────────────────────────
 venv/
 env/
 .venv/
+ENV/
+.env.local
+.env.production
 
-# Distribution / packaging
+# ──────────────────────────────────────────────
+# Distribution / Packaging
+# ──────────────────────────────────────────────
 build/
 dist/
 *.egg-info/
+*.egg
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
 
+# ──────────────────────────────────────────────
 # Django
+# ──────────────────────────────────────────────
 *.log
 *.pot
-*.pyc
 *.sqlite3
 db.sqlite3
 /staticfiles/
+/static_root/
+/mediafiles/
 media/
 /images/
 *.cover
 *.mo
 
-# VS Code
-.vscode/
-
-# PyCharm
-.idea/
-
-# Environment variables
+# ──────────────────────────────────────────────
+# Environment & Secrets
+# ──────────────────────────────────────────────
 .env
 *.env
+.env.*
+secrets.json
 
-# Mac/Linux
-.DS_Store
+# ──────────────────────────────────────────────
+# IDEs & Editors
+# ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
 *.swp
+*.swo
+*~
+
+# ──────────────────────────────────────────────
+# OS Files
+# ──────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ──────────────────────────────────────────────
+# Testing
+# ──────────────────────────────────────────────
+.tox/
+.coverage
+.coverage.*
+.cache/
+.pytest_cache/
+htmlcov/
+nosetests.xml
+coverage.xml
+
+# ──────────────────────────────────────────────
+# Jupyter Notebooks
+# ──────────────────────────────────────────────
+.ipynb_checkpoints
+
+# ──────────────────────────────────────────────
+# Deployment (Render / Heroku)
+# ──────────────────────────────────────────────
+*.pid
+Procfile.local

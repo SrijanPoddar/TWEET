@@ -1,142 +1,320 @@
 {% extends 'layout.html' %}
-{% block title %}
-  {% if form.instance.pk %}Edit Tweet{% else %}Create Tweet{% endif %}
+
+{% block title %}{% if form.instance.pk %}Edit Tweet{% else %}New Tweet{% endif %}{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ── Form page layout ─────────────────────────────────── */
+    .form-page {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 130px);
+        padding: 1rem 0;
+    }
+
+    .form-wrapper {
+        width: 100%;
+        max-width: 580px;
+    }
+
+    /* ── Breadcrumb ──────────────────────────────────────── */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+    .breadcrumb a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color var(--transition);
+    }
+    .breadcrumb a:hover { color: var(--text-primary); }
+    .breadcrumb i { font-size: 0.75rem; }
+
+    /* ── Form card ───────────────────────────────────────── */
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+    }
+
+    .form-card-header {
+        padding: 1.75rem 2rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+    }
+    .form-card-header-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .form-card-header-text h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        color: var(--text-primary);
+    }
+    .form-card-header-text p {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.1rem;
+    }
+
+    .form-card-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* ── Form groups ─────────────────────────────────────── */
+    .form-group {
+        margin-bottom: 1.35rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.45rem;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+    }
+
+    /* Style Django form widgets */
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.925rem;
+        outline: none;
+        transition: all var(--transition);
+        -webkit-appearance: none;
+    }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="password"]:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--accent);
+        background: rgba(108,99,255,0.06);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-muted); }
+
+    .form-group textarea {
+        min-height: 130px;
+        resize: vertical;
+        line-height: 1.65;
+    }
+
+    /* File upload */
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        background: rgba(255,255,255,0.03);
+        border: 1px dashed var(--border-hover);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition);
+    }
+    .form-group input[type="file"]:hover {
+        border-color: var(--accent);
+        background: rgba(108,99,255,0.04);
+    }
+    .file-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+    }
+
+    /* Character counter for textarea */
+    .char-counter {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 0.35rem;
+        transition: color var(--transition);
+    }
+    .char-counter.warn { color: var(--warning); }
+    .char-counter.danger { color: var(--danger); }
+
+    /* Error messages */
+    .field-error {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: var(--danger);
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+    }
+    .field-error i { font-size: 0.9rem; flex-shrink: 0; }
+
+    /* ── Form footer ─────────────────────────────────────── */
+    .form-footer {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem;
+        border-top: 1px solid var(--border);
+        background: rgba(0,0,0,0.15);
+    }
+
+    .btn-submit {
+        flex: 1;
+        justify-content: center;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.925rem;
+    }
+
+    .btn-cancel {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.925rem;
+    }
+
+    /* ── Tip box ─────────────────────────────────────────── */
+    .tip-box {
+        background: rgba(108,99,255,0.07);
+        border: 1px solid rgba(108,99,255,0.18);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+        color: var(--accent-2);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+    .tip-box i { flex-shrink: 0; margin-top: 0.1rem; }
+
+    @media (max-width: 600px) {
+        .form-card-header, .form-card-body, .form-footer {
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<style>
-  body {
-    background: #121212;
-    font-family: 'Segoe UI', sans-serif;
-    color: #e0e0e0;
-  }
+<div class="form-page">
+    <div class="form-wrapper">
 
-  .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80vh;
-  }
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{% url 'tweet_list' %}">Home</a>
+            <i class="ph ph-caret-right"></i>
+            {% if form.instance.pk %}Edit Tweet{% else %}New Tweet{% endif %}
+        </nav>
 
-  .form-card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    width: 100%;
-    max-width: 550px;
-  }
+        <div class="form-card">
+            <!-- Header -->
+            <div class="form-card-header">
+                <div class="form-card-header-icon">
+                    <i class="ph-fill ph-{% if form.instance.pk %}pencil-simple{% else %}lightning{% endif %}"></i>
+                </div>
+                <div class="form-card-header-text">
+                    <h2>{% if form.instance.pk %}Edit your tweet{% else %}What's on your mind?{% endif %}</h2>
+                    <p>{% if form.instance.pk %}Update your tweet below{% else %}Share something with the world{% endif %}</p>
+                </div>
+            </div>
 
-  .form-card h2 {
-    color: #fff;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+            <!-- Body -->
+            <div class="form-card-body">
+                {% if not form.instance.pk %}
+                <div class="tip-box">
+                    <i class="ph ph-lightbulb"></i>
+                    Keep it concise and engaging — the best tweets are under 280 characters.
+                </div>
+                {% endif %}
 
-  .form-group {
-    margin-bottom: 1rem;
-  }
+                <form method="post" enctype="multipart/form-data" id="tweet-form">
+                    {% csrf_token %}
 
-  .form-label {
-    color: #ddd;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == 'text' %}
+                            <div class="char-counter" id="char-counter">0 characters</div>
+                        {% endif %}
+                        {% if field.name == 'photo' %}
+                            <div class="file-hint">
+                                <i class="ph ph-image"></i> JPEG, PNG, GIF or WebP — max 5 MB
+                            </div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="field-error">
+                                <i class="ph ph-warning-circle"></i>
+                                {{ field.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+            </div>
 
-  .form-control {
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #fff;
-    width: 100%;
-  }
-
-  .form-control:focus {
-    border-color: #2575fc;
-    background: #333;
-    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
-  }
-
-  /* Textarea styling */
-  textarea.form-control {
-    border-radius: 4px;          /* more rectangular */
-    padding: 0.75rem;
-    min-height: 120px;
-    resize: vertical;             /* allow vertical resize */
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1rem;
-  }
-
-  textarea.form-control:focus {
-    border-color: #2575fc;
-    background: #333;
-    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
-  }
-
-  .btn-primary {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(to right, #5c0dcc, #1f5cf3);
-  }
-
-  .btn-secondary {
-    background: #444;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem;
-    margin-left: 0.5rem;
-    color: #fff;
-  }
-
-  .btn-secondary:hover {
-    background: #555;
-  }
-
-  .text-danger {
-    font-size: 0.85rem;
-  }
-
-  form .btn-container {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 1rem;
-  }
-</style>
-
-<div class="container form-container">
-  <div class="form-card">
-    <h2>
-      {% if form.instance.pk %}Edit Tweet{% else %}Create Tweet{% endif %}
-    </h2>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger">{{ field.errors|striptags }}</div>
-          {% endif %}
+            <!-- Footer -->
+            <div class="form-footer">
+                <a href="{% url 'tweet_list' %}" class="btn btn-outline btn-cancel" id="cancel-btn">
+                    <i class="ph ph-x"></i> Cancel
+                </a>
+                <button type="submit" form="tweet-form" class="btn btn-primary btn-submit" id="submit-btn">
+                    <i class="ph-fill ph-{% if form.instance.pk %}check{% else %}paper-plane-tilt{% endif %}"></i>
+                    {% if form.instance.pk %}Save changes{% else %}Post Tweet{% endif %}
+                </button>
+            </div>
+                </form>
         </div>
-      {% endfor %}
-      <div class="btn-container">
-        <button class="btn btn-primary" type="submit">Submit</button>
-        <a href="{% url 'tweet_list' %}" class="btn btn-secondary">Cancel</a>
-      </div>
-    </form>
-  </div>
+
+    </div>
 </div>
+
+<script>
+    // Live character counter for tweet text
+    const textarea = document.querySelector('#id_text');
+    const counter = document.getElementById('char-counter');
+
+    if (textarea && counter) {
+        const update = () => {
+            const len = textarea.value.length;
+            counter.textContent = len + ' character' + (len !== 1 ? 's' : '');
+            counter.className = 'char-counter';
+            if (len > 240) counter.classList.add('warn');
+            if (len > 280) counter.classList.add('danger');
+        };
+        textarea.addEventListener('input', update);
+        update(); // init
+    }
+
+    // Add textarea class to textarea elements rendered by Django
+    document.querySelectorAll('textarea').forEach(el => {
+        el.style.width = '100%';
+    });
+</script>
 {% endblock %}

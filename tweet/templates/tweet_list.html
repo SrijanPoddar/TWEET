@@ -1,37 +1,346 @@
 {% extends 'layout.html' %}
 
-{% block title %}
-  Home
+{% block title %}Home{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ── Feed header ─────────────────────────────────────── */
+    .feed-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .feed-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+    }
+    .feed-title span {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* ── Search bar ──────────────────────────────────────── */
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .search-wrap {
+        position: relative;
+    }
+    .search-wrap i {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1rem;
+        pointer-events: none;
+    }
+    .search-input {
+        padding: 0.55rem 1rem 0.55rem 2.4rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.875rem;
+        width: 230px;
+        transition: all var(--transition);
+        outline: none;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+        border-color: var(--accent);
+        background: rgba(108,99,255,0.06);
+        width: 280px;
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-btn {
+        padding: 0.55rem 1rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+    }
+    .search-btn:hover {
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+        border-color: var(--border-hover);
+    }
+
+    /* Active search banner */
+    .search-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.65rem 1rem;
+        background: rgba(108,99,255,0.08);
+        border: 1px solid rgba(108,99,255,0.2);
+        border-radius: var(--radius-md);
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--accent-2);
+    }
+    .search-banner a {
+        color: var(--text-muted);
+        text-decoration: none;
+        margin-left: auto;
+        font-size: 0.8rem;
+    }
+    .search-banner a:hover { color: var(--text-primary); }
+
+    /* ── Tweet feed grid ─────────────────────────────────── */
+    .tweet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+
+    /* ── Tweet card ──────────────────────────────────────── */
+    .tweet-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+        animation: fadeIn 0.4s ease both;
+        display: flex;
+        flex-direction: column;
+    }
+    .tweet-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.35), var(--shadow-glow);
+        border-color: var(--border-hover);
+        background: var(--bg-card-hover);
+    }
+
+    .tweet-card-image {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        display: block;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .tweet-card-body {
+        padding: 1.1rem 1.25rem 1.25rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .tweet-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .tweet-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+    .tweet-author {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        letter-spacing: -0.2px;
+    }
+    .tweet-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .tweet-text {
+        font-size: 0.95rem;
+        line-height: 1.65;
+        color: var(--text-secondary);
+        flex: 1;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+
+    .tweet-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+    }
+
+    .tweet-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .own-badge {
+        font-size: 0.72rem;
+        padding: 0.2rem 0.5rem;
+        background: rgba(108,99,255,0.12);
+        color: var(--accent-2);
+        border: 1px solid rgba(108,99,255,0.2);
+        border-radius: 6px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    /* ── Empty state ─────────────────────────────────────── */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 1rem;
+        color: var(--text-muted);
+    }
+    .empty-state-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+    }
+    .empty-state h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+    }
+    .empty-state p {
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Stagger animation */
+    .tweet-card:nth-child(1)  { animation-delay: 0ms; }
+    .tweet-card:nth-child(2)  { animation-delay: 60ms; }
+    .tweet-card:nth-child(3)  { animation-delay: 120ms; }
+    .tweet-card:nth-child(4)  { animation-delay: 180ms; }
+    .tweet-card:nth-child(5)  { animation-delay: 240ms; }
+    .tweet-card:nth-child(6)  { animation-delay: 300ms; }
+    .tweet-card:nth-child(n+7){ animation-delay: 360ms; }
+</style>
 {% endblock %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <a href="{% url 'tweet_create' %}" class="btn btn-primary">Create a tweet</a>
-    <form class="d-flex" method="get" action="{% url 'tweet_list' %}">
-      <input class="form-control me-2" type="search" name="q" placeholder="Search tweets..." value="{{ request.GET.q }}">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
-  </div>
 
-  <div class="container row gap-3 justify-content-start">
-    {% for tweet in tweets %}
-      <div class="card shadow-sm p-0" style="width: 18rem;">
-        {% if tweet.photo %}
-          <img src="{{ tweet.photo.url }}" class="card-img-top" alt="Tweet image" />
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title text-primary">{{ tweet.user.username }}</h5>
-          <p class="card-text">{{ tweet.text }}</p>
-          {% if tweet.user == user %}
-            <div class="d-flex gap-2">
-              <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-sm btn-primary">EDIT</a>
-              <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-sm btn-danger">DELETE</a>
-            </div>
-          {% endif %}
+<!-- ── Feed Header ── -->
+<div class="feed-header">
+    <h1 class="feed-title">
+        <span>Latest</span> Tweets
+    </h1>
+
+    <form class="search-form" method="get" action="{% url 'tweet_list' %}" id="search-form">
+        <div class="search-wrap">
+            <i class="ph ph-magnifying-glass"></i>
+            <input
+                class="search-input"
+                type="search"
+                name="q"
+                id="search-input"
+                placeholder="Search tweets…"
+                value="{{ request.GET.q|default:'' }}"
+                autocomplete="off"
+            >
         </div>
-      </div>
-    {% empty %}
-      <p class="text-muted">No tweets found.</p>
+        <button class="search-btn" type="submit">Search</button>
+        {% if request.GET.q %}
+            <a href="{% url 'tweet_list' %}" class="btn btn-ghost btn-sm">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Active search notice -->
+{% if request.GET.q %}
+<div class="search-banner">
+    <i class="ph ph-magnifying-glass"></i>
+    Showing results for <strong>"{{ request.GET.q }}"</strong>
+    <a href="{% url 'tweet_list' %}">✕ Clear</a>
+</div>
+{% endif %}
+
+<!-- ── Tweet Grid ── -->
+{% if tweets %}
+<div class="tweet-grid">
+    {% for tweet in tweets %}
+    <article class="tweet-card" id="tweet-{{ tweet.id }}">
+        {% if tweet.photo %}
+            <img src="{{ tweet.photo.url }}" class="tweet-card-image" alt="Tweet image by {{ tweet.user.username }}">
+        {% endif %}
+
+        <div class="tweet-card-body">
+            <div class="tweet-meta">
+                <div class="tweet-avatar">{{ tweet.user.username|first|upper }}</div>
+                <div>
+                    <div class="tweet-author">@{{ tweet.user.username }}</div>
+                    <div class="tweet-time">{{ tweet.created_at|timesince }} ago</div>
+                </div>
+                {% if tweet.user == user %}
+                    <span class="own-badge" style="margin-left:auto;">You</span>
+                {% endif %}
+            </div>
+
+            <p class="tweet-text">{{ tweet.text }}</p>
+
+            <div class="tweet-footer">
+                <div class="tweet-actions">
+                    {% if tweet.user == user %}
+                        <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-ghost btn-sm" id="edit-tweet-{{ tweet.id }}">
+                            <i class="ph ph-pencil-simple"></i> Edit
+                        </a>
+                        <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm" id="delete-tweet-{{ tweet.id }}">
+                            <i class="ph ph-trash"></i> Delete
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </article>
     {% endfor %}
-  </div>
+</div>
+
+{% else %}
+<!-- Empty state -->
+<div class="empty-state">
+    <div class="empty-state-icon"><i class="ph ph-chats-circle"></i></div>
+    {% if request.GET.q %}
+        <h3>No results found</h3>
+        <p>No tweets match "{{ request.GET.q }}". Try a different search.</p>
+        <a href="{% url 'tweet_list' %}" class="btn btn-outline">View all tweets</a>
+    {% else %}
+        <h3>No tweets yet</h3>
+        <p>Be the first to share something with the world.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'tweet_create' %}" class="btn btn-primary">
+                <i class="ph ph-pencil-simple"></i> Create your first tweet
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary">Get started</a>
+        {% endif %}
+    {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}

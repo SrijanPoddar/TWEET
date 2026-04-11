@@ -1,12 +1,168 @@
 {% extends 'layout.html' %}
-{% block title %}
-  Home
+
+{% block title %}Delete Tweet{% endblock %}
+
+{% block extra_head %}
+<style>
+    .delete-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 130px);
+    }
+
+    .delete-card {
+        width: 100%;
+        max-width: 460px;
+        background: var(--bg-card);
+        border: 1px solid rgba(248,113,113,0.2);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+        animation: fadeIn 0.35s ease;
+    }
+
+    .delete-card-header {
+        padding: 2rem 2rem 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .delete-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(248,113,113,0.12);
+        border: 1px solid rgba(248,113,113,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+        font-size: 1.6rem;
+        color: var(--danger);
+        animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.3); }
+        50%       { box-shadow: 0 0 0 8px rgba(248,113,113,0); }
+    }
+
+    .delete-card-header h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.4rem;
+    }
+
+    .delete-card-header p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+    }
+
+    /* Tweet preview */
+    .tweet-preview {
+        margin: 1.25rem 2rem;
+        padding: 1rem;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        position: relative;
+    }
+    .tweet-preview::before {
+        content: '"';
+        position: absolute;
+        top: -0.5rem;
+        left: 0.75rem;
+        font-size: 2rem;
+        color: var(--text-muted);
+        line-height: 1;
+        font-family: Georgia, serif;
+    }
+    .tweet-preview-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        padding-top: 0.5rem;
+        word-break: break-word;
+        max-height: 80px;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    }
+
+    /* Footer */
+    .delete-card-footer {
+        display: flex;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem 1.75rem;
+    }
+
+    .btn-delete-confirm {
+        flex: 1;
+        justify-content: center;
+        padding: 0.72rem;
+        font-size: 0.925rem;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-delete-confirm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(239,68,68,0.4);
+    }
+
+    .btn-cancel-back {
+        flex: 1;
+        justify-content: center;
+        padding: 0.72rem;
+        font-size: 0.925rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-  <form action="" method="post">
-    <button class="btn btn-danger" type="submit">Confirm Delete</button>
-    <a href="{% url 'tweet_list' %}" class="btn btn-success">Cancel</a>
-    {% csrf_token %}
-  </form>
+<div class="delete-page">
+    <div class="delete-card">
+
+        <!-- Header -->
+        <div class="delete-card-header">
+            <div class="delete-icon">
+                <i class="ph-fill ph-trash"></i>
+            </div>
+            <h2>Delete this tweet?</h2>
+            <p>This action is permanent and cannot be undone. Your tweet will be removed from the platform.</p>
+        </div>
+
+        <!-- Tweet preview -->
+        {% if tweet.text %}
+        <div class="tweet-preview">
+            <div class="tweet-preview-text">{{ tweet.text }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="delete-card-footer">
+            <a href="{% url 'tweet_list' %}" class="btn btn-outline btn-cancel-back" id="cancel-delete-btn">
+                <i class="ph ph-arrow-left"></i> Keep it
+            </a>
+            <form action="" method="post" style="flex:1;display:flex;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete-confirm" id="confirm-delete-btn">
+                    <i class="ph-fill ph-trash"></i> Yes, delete
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

@@ -1,6 +1,82 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
+
+{% block title %}Signed Out{% endblock %}
+
+{% block extra_head %}
+<style>
+    .logout-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 130px);
+    }
+
+    .logout-card {
+        text-align: center;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2.5rem 2.5rem;
+        max-width: 380px;
+        width: 100%;
+        backdrop-filter: blur(12px);
+        animation: fadeIn 0.4s ease;
+    }
+
+    .logout-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.8rem;
+        color: white;
+        box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .logout-card h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .logout-card p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        line-height: 1.55;
+    }
+
+    .logout-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+    .btn-full { width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.925rem; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2>Logged Out</h2>
-    <p>You have been logged out <a href="{% url 'login' %}">Login here</a></p>
+<div class="logout-page">
+    <div class="logout-card">
+        <div class="logout-icon">
+            <i class="ph-fill ph-check"></i>
+        </div>
+        <h2>You've been signed out</h2>
+        <p>Thanks for using TWEET. Your session has been securely ended.</p>
+
+        <div class="logout-actions">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-full" id="sign-back-in-btn">
+                <i class="ph-fill ph-sign-in"></i> Sign back in
+            </a>
+            <a href="{% url 'tweet_list' %}" class="btn btn-outline btn-full" id="browse-tweets-btn">
+                <i class="ph ph-house"></i> Browse tweets
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

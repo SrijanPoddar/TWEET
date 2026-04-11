@@ -1,41 +1,18 @@
-body {
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/*
+ * TWEET — Global static stylesheet
+ * Most design tokens and component styles live in layout.html.
+ * This file is reserved for any future static overrides.
+ */
 
-.container {
-    margin-top: 2rem;
-}
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
 
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    background-color: #1e1e1e;
-    color: #fff;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
+/* Ensure images never overflow */
+img { max-width: 100%; height: auto; }
 
-.card-title {
-    font-weight: bold;
-}
-
-.btn {
-    border-radius: 20px;
-    padding: 0.3rem 0.9rem;
-}
-
-.form-control {
-    border-radius: 20px;
-    background-color: #1e1e1e;
-    color: #fff;
-    border: 1px solid #444;
-}
-.form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: none;
+/* Accessible focus ring for keyboard nav */
+*:focus-visible {
+    outline: 2px solid rgba(108, 99, 255, 0.7);
+    outline-offset: 3px;
+    border-radius: 4px;
 }

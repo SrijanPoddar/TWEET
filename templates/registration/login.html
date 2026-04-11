@@ -1,118 +1,246 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_head %}
 <style>
-  body {
-    background: #121212;
-    font-family: 'Segoe UI', sans-serif;
-    color: #e0e0e0;
-  }
+    /* ── Auth page layout ─────────────────────────────────── */
+    .auth-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 130px);
+        padding: 1rem 0;
+    }
 
-  .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
+    .auth-wrapper {
+        width: 100%;
+        max-width: 440px;
+    }
 
-  .form-card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    width: 100%;
-    max-width: 450px;
-  }
+    /* ── Brand mark ──────────────────────────────────────── */
+    .auth-brand {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .auth-brand-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.9rem;
+        font-size: 1.4rem;
+        color: white;
+        box-shadow: 0 8px 30px var(--accent-glow);
+    }
+    .auth-brand h1 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .auth-brand p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+    }
 
-  .form-card h2 {
-    color: #fff;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+    /* ── Auth card ───────────────────────────────────────── */
+    .auth-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
 
-  .form-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
+    .auth-card-body {
+        padding: 2rem;
+    }
 
-  .form-label {
-    color: #ddd;
-    font-weight: 500;
-    margin-right: 10px;
-    width: 120px;
-    text-align: right;
-  }
+    .auth-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.6rem;
+        letter-spacing: -0.3px;
+    }
 
-  .form-control {
-    flex: 1;
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #fff;
-  }
+    /* ── Form fields ─────────────────────────────────────── */
+    .form-group {
+        margin-bottom: 1.15rem;
+    }
 
-  .form-control:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
-    background: #333;
-  }
+    .form-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+    }
 
-  .btn-primary {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="email"] {
+        width: 100%;
+        padding: 0.72rem 1rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.925rem;
+        outline: none;
+        transition: all var(--transition);
+        -webkit-appearance: none;
+    }
+    .form-group input:focus {
+        border-color: var(--accent);
+        background: rgba(108,99,255,0.06);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group input::placeholder { color: var(--text-muted); }
 
-  .btn-primary:hover {
-    background: linear-gradient(to right, #5c0dcc, #1f5cf3);
-  }
+    /* Field error */
+    .field-error {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: var(--danger);
+        font-size: 0.8rem;
+        margin-top: 0.45rem;
+        background: rgba(248,113,113,0.08);
+        padding: 0.4rem 0.65rem;
+        border-radius: 6px;
+        border: 1px solid rgba(248,113,113,0.15);
+    }
 
-  .register-link {
-    margin-top: 1rem;
-    text-align: center;
-    color: #bbb;
-  }
+    /* Global error alert */
+    .auth-alert {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1rem;
+        background: rgba(248,113,113,0.1);
+        border: 1px solid rgba(248,113,113,0.25);
+        border-radius: var(--radius-md);
+        color: var(--danger);
+        font-size: 0.875rem;
+        margin-bottom: 1.25rem;
+    }
 
-  .register-link a {
-    color: #4a90e2;
-    font-weight: 600;
-    text-decoration: none;
-  }
+    /* ── Submit button ───────────────────────────────────── */
+    .btn-auth {
+        width: 100%;
+        padding: 0.8rem;
+        justify-content: center;
+        font-size: 0.95rem;
+        margin-top: 0.75rem;
+        border-radius: var(--radius-md);
+    }
 
-  .register-link a:hover {
-    text-decoration: underline;
-  }
+    /* ── Card footer ─────────────────────────────────────── */
+    .auth-card-footer {
+        padding: 1.1rem 2rem;
+        border-top: 1px solid var(--border);
+        background: rgba(0,0,0,0.12);
+        text-align: center;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+    .auth-card-footer a {
+        color: var(--accent-2);
+        font-weight: 600;
+        text-decoration: none;
+        transition: color var(--transition);
+    }
+    .auth-card-footer a:hover { color: var(--accent); }
 
-  .text-danger {
-    margin-left: 130px;
-    font-size: 0.85rem;
-  }
+    /* ── Divider ─────────────────────────────────────────── */
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 1.1rem 0;
+        color: var(--text-muted);
+        font-size: 0.78rem;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+
+    @media (max-width: 600px) {
+        .auth-card-body, .auth-card-footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
 </style>
+{% endblock %}
 
-<div class="container form-container">
-  <div class="form-card">
-    <h2>Login</h2>
-    <form method="post" action="{% url 'login' %}">
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-          {{ field }}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-wrapper">
+
+        <!-- Brand mark -->
+        <div class="auth-brand">
+            <div class="auth-brand-icon">
+                <i class="ph-fill ph-lightning"></i>
+            </div>
+            <h1>TWEET</h1>
+            <p>Welcome back — sign in to continue</p>
         </div>
-        {% if field.errors %}
-          <div class="text-danger">{{ field.errors|striptags }}</div>
-        {% endif %}
-      {% endfor %}
-      <button type="submit" class="btn btn-primary w-100">Login</button>
-    </form>
-    <div class="register-link">
-      Don’t have an account? <a href="{% url 'register' %}">Register here</a>
+
+        <div class="auth-card">
+            <div class="auth-card-body">
+                <h2 class="auth-card-title">Sign in to your account</h2>
+
+                {% if error %}
+                <div class="auth-alert" id="login-error-alert">
+                    <i class="ph ph-warning-circle"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}" id="login-form">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="field-error">
+                            <i class="ph ph-warning-circle"></i>
+                            {{ field.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary btn-auth" id="login-submit-btn">
+                        <i class="ph-fill ph-sign-in"></i>
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-card-footer">
+                Don't have an account?
+                <a href="{% url 'register' %}" id="go-register-link">Create one free</a>
+            </div>
+        </div>
+
     </div>
-  </div>
 </div>
 {% endblock %}
